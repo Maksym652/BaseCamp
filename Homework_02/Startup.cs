@@ -1,3 +1,4 @@
+using Homework_02;
 using Homework_02.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace Homework2_Basecamp
         {
             services.AddControllers();
             services.AddTransient<IRepository<Student>, StudentRepository>();
+            services.AddTransient<IRepository<Point>, PointRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
