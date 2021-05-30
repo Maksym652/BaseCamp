@@ -1,3 +1,4 @@
+using Homework2_Basecamp;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Homework2_Basecamp
+namespace Homework_02
 {
     public class Program
     {

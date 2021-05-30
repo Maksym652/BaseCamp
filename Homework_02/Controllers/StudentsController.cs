@@ -1,60 +1,118 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Homework2_Basecamp.Controllers
+﻿namespace Homework2_Basecamp.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Homework_02;
+    using Homework_02.Repositories;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
+    /// <summary>
+    /// Controller with CRUD operations for Student entities.
+    /// </summary>
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class StudentsController : ControllerBase
     {
-        static List<Student> students = new List<Student>()
-        {
-            new Student(1, "Ivanenko", 201, 122, true),
-            new Student(2, "Petrenko", 202, 122, false),
-            new Student(3, "Vasylenko", 205, 123, true),
-            new Student(4, "Stepanenko", 208, 121, false),
-            new Student(5, "Kovalenko", 209, 121, true),
-        };
+        private static IRepository<Student> studentRepository = new StudentRepository();
+        private static IRepository<Point> pointRepository = new PointRepository();
 
+        /// <summary>
+        /// Returns list with all students.
+        /// </summary>
+        /// <returns>List, that contains all students.</returns>
         [HttpGet]
         public List<Student> Get()
         {
-            return students;
+            return (List<Student>)studentRepository.GetAll();
         }
 
+        /// <summary>
+        /// Returns student with specified ID.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <returns>Student with specified ID.</returns>
         [HttpGet]
         [Route("{id}")]
         public Student Get([FromRoute] int id)
         {
-            return students.Find(student => student.Id == id);
+            return studentRepository.GetById(id);
         }
 
+        /// <summary>
+        /// Creates new student and adds it to the list.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <param name="name">Student name.</param>
+        /// <param name="group">Student group.</param>
+        /// <param name="specialty">Student specialty.</param>
+        /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
+        /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
-        public void Post([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
+        public IActionResult Post([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
         {
-            students.Add(new Student(id, name, group, specialty, isStudiedOnBudget));
+            if (studentRepository.Create(new Student(id, name, group, specialty, isStudiedOnBudget)))
+            {
+                return this.Ok("Operation successful");
+            }
+            else
+            {
+                return this.Ok("Operation unsuccessful");
+            }
         }
 
+        /// <summary>
+        /// Updates student with specified ID.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <param name="name">Student name.</param>
+        /// <param name="group">Student group.</param>
+        /// <param name="specialty">Student specialty.</param>
+        /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
+        /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
-        public void Put([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
+        public IActionResult Put([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
         {
-            Student st = students.Find(student => student.Id == id);
-            students.Remove(st);
-            st.Name = name;
-            st.Group = group;
-            st.Specialty = specialty;
-            st.IsStudiedOnBudget = isStudiedOnBudget;
-            students.Add(st);
+            if (studentRepository.Update(new Student(id, name, group, specialty, isStudiedOnBudget)))
+            {
+                return this.Ok("Operation successful");
+            }
+            else
+            {
+                return this.Ok("Operation unsuccessful");
+            }
         }
 
+        /// <summary>
+        /// Removes student with specified ID.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <returns>Object that represents result of the method work.</returns>
         [HttpDelete]
-        public void Delete([FromBody] int id)
+        public IActionResult Delete([FromBody] int id)
         {
-            students.Remove(students.Find(st => st.Id == id));
+            if (studentRepository.Delete(id))
+            {
+                return this.Ok("Operation successful");
+            }
+            else
+            {
+                return this.Ok("Operation unsuccessful");
+            }
+        }
+
+        /// <summary>
+        /// Returns a collection of points of the student with specified ID.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <returns>Collection of the points of this student</returns>
+        [HttpGet]
+        [Route("{id}/points")]
+        public IEnumerable<Point> GetPoints([FromRoute] int id)
+        {
+            return pointRepository.GetAll().Where(p => p.StudentId == id);
         }
     }
 }
