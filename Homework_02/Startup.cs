@@ -1,3 +1,5 @@
+using Homework_02;
+using Homework_02.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,9 +28,12 @@ namespace Homework2_Basecamp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<IRepository<Student>, StudentRepository>();
+            services.AddTransient<IRepository<Point>, PointRepository>();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo{
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
                     Version = "v1",
                     Title = "Test API",
                     Description = "ASP.NET Core Web API"
@@ -48,6 +53,7 @@ namespace Homework2_Basecamp
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");
             });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -61,3 +67,4 @@ namespace Homework2_Basecamp
         }
     }
 }
+

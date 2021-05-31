@@ -1,18 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Homework2_Basecamp
+﻿namespace Homework2_Basecamp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Homework_02;
+
+    /// <summary>
+    /// Represents a student of the university.
+    /// </summary>
     public class Student
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Group { get; set; }
-        public int Specialty { get; set; }
-        public bool IsStudiedOnBudget { get; set; }
-        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Student"/> class.
+        /// </summary>
+        /// <param name="id">Student id.</param>
+        /// <param name="name">Student name.</param>
+        /// <param name="group">Student group.</param>
+        /// <param name="specialty">Student specialty.</param>
+        /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
         public Student(int id, string name, int group, int specialty, bool isStudiedOnBudget)
         {
             this.Id = id;
@@ -21,5 +27,30 @@ namespace Homework2_Basecamp
             this.Specialty = specialty;
             this.IsStudiedOnBudget = isStudiedOnBudget;
         }
+
+        /// <summary>
+        /// Gets or sets student's ID.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets student's name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets student's group.
+        /// </summary>
+        public int Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets student's specialty.
+        /// </summary>
+        public int Specialty { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether student is studying on a budget (for free).
+        /// </summary>
+        public bool IsStudiedOnBudget { get; set; }
     }
 }
