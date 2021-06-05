@@ -1,13 +1,16 @@
-﻿namespace Homework2_Basecamp.Controllers
+﻿namespace Basecamp
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Homework_02;
-    using Homework_02.Repositories;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using WebApp.Api.Requests;
+    using WebApp.Api.Responses;
+    using WebApp.Core.Models;
+    using WebApp.Core.Repositories;
+    using WebApp.Data.Repositories;
 
     /// <summary>
     /// Controller with CRUD operations for Student entities.
@@ -24,9 +27,9 @@
         /// </summary>
         /// <returns>List, that contains all students.</returns>
         [HttpGet]
-        public List<Student> Get()
+        public List<StudentResponse> Get()
         {
-            return (List<Student>)studentRepository.GetAll();
+            return (List<StudentResponse>)studentRepository.GetAll().Select(st => new StudentResponse(st));
         }
 
         /// <summary>
@@ -36,24 +39,21 @@
         /// <returns>Student with specified ID.</returns>
         [HttpGet]
         [Route("{id}")]
-        public Student Get([FromRoute] int id)
+        public StudentResponse Get([FromRoute] int id)
         {
-            return studentRepository.GetById(id);
+            return new StudentResponse(studentRepository.GetById(id));
         }
 
         /// <summary>
         /// Creates new student and adds it to the list.
         /// </summary>
-        /// <param name="id">Student id.</param>
-        /// <param name="name">Student name.</param>
-        /// <param name="group">Student group.</param>
-        /// <param name="specialty">Student specialty.</param>
-        /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
+        /// <param name="studentRequest">Object of CreateStudentRequest class.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
-        public IActionResult Post([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
+        public IActionResult Post([FromBody] CreateStudentRequest studentRequest)
         {
-            if (studentRepository.Create(new Student(id, name, group, specialty, isStudiedOnBudget)))
+            int id = 20000000 + ((DateTime.Now.Year - 2000) * 100000) + (studentRequest.Group * 100) + pointRepository.GetAll().Where(p => studentRepository.GetById(p.StudentId).Group == studentRequest.Group).Count();
+            if (studentRepository.Create(new Student(id, studentRequest.Name, studentRequest.Group, studentRequest.Specialty, studentRequest.IsStudiedOnBudget)))
             {
                 return this.Ok("Operation successful");
             }
@@ -67,15 +67,13 @@
         /// Updates student with specified ID.
         /// </summary>
         /// <param name="id">Student id.</param>
-        /// <param name="name">Student name.</param>
-        /// <param name="group">Student group.</param>
-        /// <param name="specialty">Student specialty.</param>
-        /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
+        /// <param name="request">Update student request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
-        public IActionResult Put([FromQuery] int id, [FromQuery] string name, [FromQuery] int group, [FromQuery] int specialty, [FromQuery] bool isStudiedOnBudget)
+        [Route("update/{id}")]
+        public IActionResult Put([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
-            if (studentRepository.Update(new Student(id, name, group, specialty, isStudiedOnBudget)))
+            if (studentRepository.Update(new Student(id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget)))
             {
                 return this.Ok("Operation successful");
             }

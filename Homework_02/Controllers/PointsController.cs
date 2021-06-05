@@ -1,12 +1,16 @@
-﻿namespace Homework_02.Controllers
+﻿namespace BaseCamp
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Homework_02.Repositories;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using WebApp.Api.Requests;
+    using WebApp.Api.Responses;
+    using WebApp.Core.Models;
+    using WebApp.Core.Repositories;
+    using WebApp.Data.Repositories;
 
     /// <summary>
     /// Controller with CRUD operations for Point entities.
@@ -22,9 +26,9 @@
         /// </summary>
         /// <returns>Collection that contains all points.</returns>
         [HttpGet]
-        public IEnumerable<Point> GetAll()
+        public IEnumerable<PointResponse> GetAll()
         {
-            return pointRepository.GetAll();
+            return pointRepository.GetAll().Select(p => new PointResponse(p));
         }
 
         /// <summary>
@@ -34,24 +38,22 @@
         /// <returns>False if student id is less than 0 or if the list already contains student with the same Id, otherwise true.</returns>
         [HttpGet]
         [Route("{id}")]
-        public Point GetById([FromRoute] int id)
+        public PointResponse GetById([FromRoute] int id)
         {
-            return pointRepository.GetById(id);
+            return new PointResponse(pointRepository.GetById(id));
         }
 
         /// <summary>
         /// Creates new point and adds it to the list.
         /// </summary>
-        /// <param name="id">Point id.</param>
-        /// <param name="studentId">ID of the student, who has got a point.</param>
-        /// <param name="mark">Point on a 100-point scale.</param>
-        /// <param name="subjectName">Name of the subject.</param>
-        /// <param name="date">Date, when student has got a point.</param>
+        /// <param name="request">Point create request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
-        public IActionResult Create([FromQuery] int id, [FromQuery] int studentId, [FromQuery] float mark, [FromQuery] string subjectName, [FromQuery] DateTime date)
+        public IActionResult Create([FromBody] CreatePointRequest request)
         {
-            if (pointRepository.Create(new Point(id, mark, studentId, subjectName, date)))
+            int id = ((request.StudentId - 20000000) * 100) + pointRepository.GetAll()
+                .Where(p => p.StudentId == request.StudentId && p.Date.DayOfYear == DateTime.Now.DayOfYear && p.Date.Year == DateTime.Now.Year).Count() + 1;
+            if (pointRepository.Create(new Point(id, request.Mark, request.StudentId, request.Subject, DateTime.Now, request.Task)))
             {
                 return this.Ok("Operation successful");
             }
@@ -83,15 +85,13 @@
         /// Updates point with specified ID.
         /// </summary>
         /// <param name="id">Point id.</param>
-        /// <param name="studentId">ID of the student, who has got a point.</param>
-        /// <param name="mark">Point on a 100-point scale.</param>
-        /// <param name="subjectName">Name of the subject.</param>
-        /// <param name="date">Date, when student has got a point.</param>
-         /// <returns>Object that represents result of the method work.</returns>
+        /// <param name="request">Point update request.</param>
+        /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
-        public IActionResult Update([FromQuery] int id, [FromQuery] int studentId, [FromQuery] float mark, [FromQuery] string subjectName, [FromQuery] DateTime date)
+        [Route("update/{id}")]
+        public IActionResult Update([FromRoute] int id, [FromBody] UpdatePointRequest request)
         {
-            if (pointRepository.Update(new Point(id, mark, studentId, subjectName, date)))
+            if (pointRepository.Update(new Point(id, request.Mark, pointRepository.GetById(id).StudentId, pointRepository.GetById(id).Subject, DateTime.Now, request.Task)))
             {
                 return this.Ok("Operation successful");
             }

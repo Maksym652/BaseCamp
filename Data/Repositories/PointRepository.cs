@@ -1,9 +1,11 @@
-﻿namespace Homework_02.Repositories
+﻿namespace WebApp.Data.Repositories
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using WebApp.Core.Models;
+    using WebApp.Core.Repositories;
 
     /// <summary>
     /// Repository for interraction with Point entities.

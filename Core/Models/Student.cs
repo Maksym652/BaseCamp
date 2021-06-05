@@ -1,10 +1,9 @@
-﻿namespace Homework2_Basecamp
+﻿namespace WebApp.Core.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Homework_02;
 
     /// <summary>
     /// Represents a student of the university.
@@ -25,7 +24,7 @@
             this.Name = name;
             this.Group = group;
             this.Specialty = specialty;
-            this.IsStudiedOnBudget = isStudiedOnBudget;
+            this.IsStudyingOnBudget = isStudiedOnBudget;
         }
 
         /// <summary>
@@ -51,6 +50,6 @@
         /// <summary>
         /// Gets or sets a value indicating whether student is studying on a budget (for free).
         /// </summary>
-        public bool IsStudiedOnBudget { get; set; }
+        public bool IsStudyingOnBudget { get; set; }
     }
 }

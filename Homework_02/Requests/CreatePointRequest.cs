@@ -1,55 +1,50 @@
-﻿namespace Homework_02
+﻿namespace WebApp.Api.Requests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using System.ComponentModel.DataAnnotations;
 
-    /// <summary>
-    /// Represents a student's point.
-    /// </summary>
-    public class Point
+    public class CreatePointRequest
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Point"/> class.
+        /// Initializes a new instance of the <see cref="CreatePointRequest"/> class.
         /// </summary>
-        /// <param name="id">ID of the point.</param>
         /// <param name="mark">Point on a 100-point scale.</param>
         /// <param name="studentId">ID of the student.</param>
         /// <param name="subject">Name of the subject.</param>
-        /// <param name="date">Date when student has got a point..</param>
-        public Point(int id, float mark, int studentId, string subject, DateTime date)
+        /// <param name="task">Name of the task completed by the student.</param>
+        public CreatePointRequest(float mark, int studentId, string subject, string task = "")
         {
-            this.Id = id;
             this.Mark = mark;
             this.Subject = subject;
             this.StudentId = studentId;
-            this.Date = date;
+            this.Task = task;
         }
-
-        /// <summary>
-        /// Gets or sets an ID of the point.
-        /// </summary>
-        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets a point on a 100-point scale.
         /// </summary>
+        [Required]
+        [Range(0, 100)]
         public float Mark { get; set; }
 
         /// <summary>
         /// Gets or sets an ID of the student, who has got a point.
         /// </summary>
+        [Required]
+        [Range(0, int.MaxValue)]
         public int StudentId { get; set; }
 
         /// <summary>
         /// Gets or sets a name of the subject.
         /// </summary>
+        [Required]
+        [MaxLength(100)]
         public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets a date when student has got a point.
+        /// Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
         /// </summary>
-        public DateTime Date { get; set; }
+        [MaxLength(100)]
+        public string Task { get; set; }
     }
 }

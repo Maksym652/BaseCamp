@@ -14,5 +14,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core\WebApp.Core.csproj" />
+    <ProjectReference Include="..\Data\WebApp.Data.csproj" />
+  </ItemGroup>
+
 
 </Project>

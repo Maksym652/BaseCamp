@@ -1,4 +1,4 @@
-﻿namespace Homework_02.Repositories
+﻿namespace WebApp.Core.Repositories
 {
     using System;
     using System.Collections.Generic;
