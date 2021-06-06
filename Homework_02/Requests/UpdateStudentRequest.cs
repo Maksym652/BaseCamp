@@ -23,5 +23,7 @@ namespace WebApp.Api.Requests
             this.Group = group;
             this.IsStudiedOnBudget = isStudyingOnBudget;
         }
+
+        UpdateStudentRequest() { }
     }
 }

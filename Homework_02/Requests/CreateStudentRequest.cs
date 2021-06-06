@@ -27,6 +27,8 @@
         /// </summary>
         public int Specialty { get; set; }
 
+        CreateStudentRequest() { }
+
         CreateStudentRequest(string name, int group, int specialty, bool isStudyingOnBudget)
         {
             this.Name = name;

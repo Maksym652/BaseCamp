@@ -11,6 +11,8 @@
     using WebApp.Core.Models;
     using WebApp.Core.Repositories;
     using WebApp.Data.Repositories;
+    using FluentValidation;
+    using WebApp.Api.Validators;
 
     /// <summary>
     /// Controller with CRUD operations for Student entities.
@@ -27,9 +29,9 @@
         /// </summary>
         /// <returns>List, that contains all students.</returns>
         [HttpGet]
-        public List<StudentResponse> Get()
+        public IEnumerable<StudentResponse> Get()
         {
-            return (List<StudentResponse>)studentRepository.GetAll().Select(st => new StudentResponse(st));
+            return studentRepository.GetAll().Select(st => new StudentResponse(st));
         }
 
         /// <summary>
@@ -52,7 +54,7 @@
         [HttpPost]
         public IActionResult Post([FromBody] CreateStudentRequest studentRequest)
         {
-            int id = 20000000 + ((DateTime.Now.Year - 2000) * 100000) + (studentRequest.Group * 100) + pointRepository.GetAll().Where(p => studentRepository.GetById(p.StudentId).Group == studentRequest.Group).Count();
+            int id = 20000000 + ((DateTime.Now.Year - 2000) * 100000) + (studentRequest.Group * 100) + studentRepository.GetAll().Where(st => st.Group == studentRequest.Group).Count() + 1;
             if (studentRepository.Create(new Student(id, studentRequest.Name, studentRequest.Group, studentRequest.Specialty, studentRequest.IsStudiedOnBudget)))
             {
                 return this.Ok("Operation successful");

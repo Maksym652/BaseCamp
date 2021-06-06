@@ -20,6 +20,8 @@
             this.Task = task;
         }
 
+        public CreatePointRequest() { }
+
         /// <summary>
         /// Gets or sets a point on a 100-point scale.
         /// </summary>

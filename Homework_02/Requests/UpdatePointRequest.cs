@@ -14,6 +14,8 @@
             this.Task = task;
         }
 
+        public UpdatePointRequest() { }
+
         /// <summary>
         /// Gets or sets a point on a 100-point scale.
         /// </summary>
@@ -24,7 +26,7 @@
         /// <summary>
         /// Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
         /// </summary>
-        [Range(0, 100)]
+        [MaxLength(100)]
         public string Task { get; set; }
     }
 }

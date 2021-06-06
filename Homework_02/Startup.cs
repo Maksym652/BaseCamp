@@ -1,20 +1,26 @@
-using Homework_02;
-using Homework_02.Repositories;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Homework2_Basecamp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FluentValidation;
+    using FluentValidation.AspNetCore;
+
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.HttpsPolicy;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using WebApp.Api.Requests;
+    using WebApp.Api.Validators;
+    using WebApp.Core.Models;
+    using WebApp.Core.Repositories;
+    using WebApp.Data.Repositories;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -30,6 +36,11 @@ namespace Homework2_Basecamp
             services.AddControllers();
             services.AddTransient<IRepository<Student>, StudentRepository>();
             services.AddTransient<IRepository<Point>, PointRepository>();
+            services.AddMvc().AddFluentValidation();
+            services.AddTransient<IValidator<CreateStudentRequest>, CreateStudentRequestValidator>();
+            services.AddTransient<IValidator<UpdateStudentRequest>, UpdateStudentRequestValidator>();
+            services.AddTransient<IValidator<CreatePointRequest>, CreatePointRequestValidator>();
+            services.AddTransient<IValidator<UpdatePointRequest>, UpdatePointRequestValidator>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
