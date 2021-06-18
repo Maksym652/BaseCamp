@@ -10,7 +10,7 @@
     /// <summary>
     /// Repository for interraction with Student entities.
     /// </summary>
-    public class StudentRepository : IRepository<Student>
+    public class StudentRepository : BaseRepository<Student>, IRepository<Student>
     {
         private static List<Student> students = new List<Student>();
 
@@ -19,7 +19,7 @@
         /// </summary>
         /// <param name="student">Student entity.</param>
         /// <returns>False if student id is less than 0 or if the list already contains student with the same Id, otherwise true.</returns>
-        public bool Create(Student student)
+        public override bool Create(Student student)
         {
             if (student.Id < 0 || students.Find(st => st.Id == student.Id) != null)
             {
@@ -35,7 +35,7 @@
         /// </summary>
         /// <param name="id">ID of the student to be deleted.</param>
         /// <returns>False if the list is not contain student with specified ID, otherwise true.</returns>
-        public bool Delete(int id)
+        public override bool Delete(int id)
         {
             if (students.Find(st => st.Id == id) == null)
             {
@@ -50,7 +50,7 @@
         /// Returns the list of all students.
         /// </summary>
         /// <returns>Collection that contains all Student entities.</returns>
-        public IEnumerable<Student> GetAll()
+        public override IEnumerable<Student> GetAll()
         {
             return students;
         }
@@ -60,7 +60,7 @@
         /// </summary>
         /// <param name="id">ID of the student to be returned.</param>
         /// <returns>Student entity with specified ID.</returns>
-        public Student GetById(int id)
+        public override Student GetById(int id)
         {
             return students.Find(st => st.Id == id);
         }
@@ -70,7 +70,7 @@
         /// </summary>
         /// <param name="item">Item that replace student with same ID.</param>
         /// <returns>False if list not contains student with the same ID as item, otherwise true.</returns>
-        public bool Update(Student item)
+        public override bool Update(Student item)
         {
             Student student = students.Find(st => st.Id == item.Id);
             if (student == null)
