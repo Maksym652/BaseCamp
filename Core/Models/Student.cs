@@ -52,5 +52,18 @@
         /// Gets or sets a value indicating whether student is studying on a budget (for free).
         /// </summary>
         public bool IsStudyingOnBudget { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if((obj == null)|| !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                Student st = (Student)obj;
+                return st.Id == this.Id;
+            }
+        }
     }
 }

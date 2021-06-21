@@ -33,7 +33,7 @@ namespace WebApp.Api.Controllers
         /// <returns> .</returns>
         [HttpGet]
         [Authorize]
-        public IActionResult GetAll()
+        public IActionResult GetAllTeachers()
         {
             return this.Ok(teacherRepository.GetAll().Select(t => new TeacherResponse(t)));
         }
@@ -46,19 +46,24 @@ namespace WebApp.Api.Controllers
         [HttpGet]
         [Route("{id}")]
         [Authorize]
-        public IActionResult Get([FromRoute] int id)
+        public IActionResult GetTeacherById([FromRoute] int id)
         {
+            if (this.teacherRepository.GetById(id) == null)
+            {
+                return this.NotFound("Teacher with specified id not found.");
+            }
+
             return this.Ok(new TeacherResponse(teacherRepository.GetById(id)));
         }
 
         /// <summary>
-        /// Creates new student and adds it to the list.
+        /// Creates new teacher and adds it to the list.
         /// </summary>
-        /// <param name="studentRequest">Object of CreateStudentRequest class.</param>
+        /// <param name="teacherRequest">Object of CreateTeacherRequest class.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
         [Authorize(Roles = "ADMINISTRATOR")]
-        public IActionResult Post([FromBody] CreateTeacherRequest teacherRequest)
+        public IActionResult AddTeacher([FromBody] CreateTeacherRequest teacherRequest)
         {
             int id;
             if (teacherRepository.GetAll().Any())
@@ -72,20 +77,20 @@ namespace WebApp.Api.Controllers
             }
             else
             {
-                return this.Ok(t);
+                return this.BadRequest(t);
             }
         }
 
         /// <summary>
-        /// Updates student with specified ID.
+        /// Updates teacher with specified ID.
         /// </summary>
-        /// <param name="id">Student id.</param>
-        /// <param name="request">Update student request.</param>
+        /// <param name="id">teacher id.</param>
+        /// <param name="request">Update teacher request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
         [Authorize(Roles = "ADMINISTRATOR")]
         [Route("{id}")]
-        public IActionResult Put([FromRoute] int id, [FromBody] UpdateTeacherRequest request)
+        public IActionResult UpdateTeacher([FromRoute] int id, [FromBody] UpdateTeacherRequest request)
         {
             Teacher t = new Teacher(id, teacherRepository.GetById(id).Name, request.DepartmentName, teacherRepository.GetById(id).Login, request.Password);
             if (teacherRepository.Update(t))
@@ -99,14 +104,14 @@ namespace WebApp.Api.Controllers
         }
 
         /// <summary>
-        /// Removes student with specified ID.
+        /// Removes teacher with specified ID.
         /// </summary>
-        /// <param name="id">Student id.</param>
+        /// <param name="id">Teacher id.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Roles = "ADMINISTRATOR")]
-        public IActionResult Delete([FromRoute] int id)
+        public IActionResult DeleteTeacher([FromRoute] int id)
         {
             if (teacherRepository.Delete(id))
             {
@@ -114,7 +119,7 @@ namespace WebApp.Api.Controllers
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.NotFound("Teacher with specified ID not found.");
             }
         }
 

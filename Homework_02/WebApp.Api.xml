@@ -4,39 +4,39 @@
         <name>WebApp.Api</name>
     </assembly>
     <members>
-        <member name="M:WebApp.Api.Controllers.TeachersController.GetAll">
+        <member name="M:WebApp.Api.Controllers.TeachersController.GetAllTeachers">
             <summary>
             Returns list with all teachers.
             </summary>
             <returns> .</returns>
         </member>
-        <member name="M:WebApp.Api.Controllers.TeachersController.Get(System.Int32)">
+        <member name="M:WebApp.Api.Controllers.TeachersController.GetTeacherById(System.Int32)">
             <summary>
             Returns teacher with specified ID.
             </summary>
             <param name="id">Teacher id.</param>
             <returns>Teacher with specified ID.</returns>
         </member>
-        <member name="M:WebApp.Api.Controllers.TeachersController.Post(WebApp.Api.Requests.CreateTeacherRequest)">
+        <member name="M:WebApp.Api.Controllers.TeachersController.AddTeacher(WebApp.Api.Requests.CreateTeacherRequest)">
             <summary>
-            Creates new student and adds it to the list.
+            Creates new teacher and adds it to the list.
             </summary>
-            <param name="studentRequest">Object of CreateStudentRequest class.</param>
+            <param name="teacherRequest">Object of CreateTeacherRequest class.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:WebApp.Api.Controllers.TeachersController.Put(System.Int32,WebApp.Api.Requests.UpdateTeacherRequest)">
+        <member name="M:WebApp.Api.Controllers.TeachersController.UpdateTeacher(System.Int32,WebApp.Api.Requests.UpdateTeacherRequest)">
             <summary>
-            Updates student with specified ID.
+            Updates teacher with specified ID.
             </summary>
-            <param name="id">Student id.</param>
-            <param name="request">Update student request.</param>
+            <param name="id">teacher id.</param>
+            <param name="request">Update teacher request.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:WebApp.Api.Controllers.TeachersController.Delete(System.Int32)">
+        <member name="M:WebApp.Api.Controllers.TeachersController.DeleteTeacher(System.Int32)">
             <summary>
-            Removes student with specified ID.
+            Removes teacher with specified ID.
             </summary>
-            <param name="id">Student id.</param>
+            <param name="id">Teacher id.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
         <member name="M:WebApp.Api.Requests.CreatePointRequest.#ctor(System.Single,System.Int32,System.String,System.String)">
@@ -206,34 +206,34 @@
             Controller with CRUD operations for Point entities.
             </summary>
         </member>
-        <member name="M:BaseCamp.PointsController.GetAll">
+        <member name="M:BaseCamp.PointsController.GetAllPoints">
             <summary>
             Returns all points.
             </summary>
             <returns>Collection that contains all points.</returns>
         </member>
-        <member name="M:BaseCamp.PointsController.GetById(System.Int32)">
+        <member name="M:BaseCamp.PointsController.GetPointById(System.Int32)">
             <summary>
             Returns point with specified ID.
             </summary>
             <param name="id">id of the point.</param>
             <returns>False if student id is less than 0 or if the list already contains student with the same Id, otherwise true.</returns>
         </member>
-        <member name="M:BaseCamp.PointsController.Create(WebApp.Api.Requests.CreatePointRequest)">
+        <member name="M:BaseCamp.PointsController.AddPoint(WebApp.Api.Requests.CreatePointRequest)">
             <summary>
             Creates new point and adds it to the list.
             </summary>
             <param name="request">Point create request.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:BaseCamp.PointsController.Delete(System.Int32)">
+        <member name="M:BaseCamp.PointsController.DeletePoint(System.Int32)">
             <summary>
             Removes point with specified id from the list.
             </summary>
             <param name="id">Point id.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:BaseCamp.PointsController.Update(System.Int32,WebApp.Api.Requests.UpdatePointRequest)">
+        <member name="M:BaseCamp.PointsController.UpdatePoint(System.Int32,WebApp.Api.Requests.UpdatePointRequest)">
             <summary>
             Updates point with specified ID.
             </summary>
@@ -266,7 +266,7 @@
             <param name="studentRequest">Object of CreateStudentRequest class.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:Basecamp.StudentsController.Put(System.Int32,WebApp.Api.Requests.UpdateStudentRequest)">
+        <member name="M:Basecamp.StudentsController.UpdateStudent(System.Int32,WebApp.Api.Requests.UpdateStudentRequest)">
             <summary>
             Updates student with specified ID.
             </summary>
@@ -274,7 +274,7 @@
             <param name="request">Update student request.</param>
             <returns>Object that represents result of the method work.</returns>
         </member>
-        <member name="M:Basecamp.StudentsController.Delete(System.Int32)">
+        <member name="M:Basecamp.StudentsController.DeleteStudent(System.Int32)">
             <summary>
             Removes student with specified ID.
             </summary>

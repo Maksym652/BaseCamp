@@ -83,7 +83,7 @@
             }
             else
             {
-                return this.BadRequest(st);
+                return this.BadRequest("Operation unsuccessful");
             }
         }
 
@@ -96,16 +96,23 @@
         [HttpPut]
         [Authorize(Roles = "ADMINISTRATOR")]
         [Route("{id}")]
-        public IActionResult Put([FromRoute] int id, [FromBody] UpdateStudentRequest request)
+        public IActionResult UpdateStudent([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
-            Student st = new Student(studentRepository.GetById(id).Login, request.NewPassword, id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget);
-            if (studentRepository.Update(st))
+            if (studentRepository.GetById(id) == null)
             {
-                return this.Ok(st);
+                return this.BadRequest("Operation unsuccessful. Student with specified ID not found!");
             }
             else
             {
-                return this.BadRequest("Operation unsuccessful");
+                Student st = new Student(studentRepository.GetById(id).Login, request.NewPassword, id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget);
+                if (studentRepository.Update(st))
+                {
+                    return this.Ok(st);
+                }
+                else
+                {
+                    return this.BadRequest("Operation unsuccessful");
+                }
             }
         }
 
@@ -117,7 +124,7 @@
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Roles = "Administrator")]
-        public IActionResult Delete([FromRoute] int id)
+        public IActionResult DeleteStudent([FromRoute] int id)
         {
             if (studentRepository.Delete(id))
             {
@@ -125,7 +132,7 @@
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.NotFound("Operation unsuccessful. Student with specified ID not found.");
             }
         }
 
@@ -139,7 +146,14 @@
         [Authorize(Roles = "STUDENT, TEACHER")]
         public IActionResult GetPoints([FromRoute] int id)
         {
-            return this.Ok(pointRepository.GetAll().Where(p => p.StudentId == id));
+            if (studentRepository.GetById(id) != null)
+            {
+                return this.Ok(pointRepository.GetAll().Where(p => p.StudentId == id).Select(p => new PointResponse(p)));
+            }
+            else
+            {
+                return this.NotFound("Student with specified ID not found.");
+            }
         }
 
 

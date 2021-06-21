@@ -33,7 +33,7 @@
         /// <returns>Collection that contains all points.</returns>
         [HttpGet]
         [Authorize(Roles = "STUDENT, TEACHER")]
-        public IActionResult GetAll()
+        public IActionResult GetAllPoints()
         {
             return this.Ok(pointRepository.GetAll().Select(p => new PointResponse(p)));
         }
@@ -46,8 +46,13 @@
         [HttpGet]
         [Route("{id}")]
         [Authorize(Roles = "STUDENT, TEACHER")]
-        public IActionResult GetById([FromRoute] int id)
+        public IActionResult GetPointById([FromRoute] int id)
         {
+            if (pointRepository.GetById(id) == null)
+            {
+                return this.NotFound("Point with specified ID not found.");
+            }
+
             return this.Ok(new PointResponse(pointRepository.GetById(id)));
         }
 
@@ -58,13 +63,14 @@
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
         [Authorize(Roles = "TEACHER")]
-        public IActionResult Create([FromBody] CreatePointRequest request)
+        public IActionResult AddPoint([FromBody] CreatePointRequest request)
         {
             int id = ((request.StudentId - 20000000) * 100) + pointRepository.GetAll()
                 .Where(p => p.StudentId == request.StudentId && p.Date.DayOfYear == DateTime.Now.DayOfYear && p.Date.Year == DateTime.Now.Year).Count() + 1;
-            if (pointRepository.Create(new Point(id, request.Mark, request.StudentId, request.Subject, DateTime.Now, request.Task)))
+            Point point = new Point(id, request.Mark, request.StudentId, request.Subject, DateTime.Now, request.Task);
+            if (pointRepository.Create(point))
             {
-                return this.Ok("Operation successful");
+                return this.Ok(point);
             }
             else
             {
@@ -80,15 +86,15 @@
         [HttpDelete]
         [Route("{id}")]
         [Authorize(Roles = "TEACHER")]
-        public IActionResult Delete([FromRoute] int id)
+        public IActionResult DeletePoint([FromRoute] int id)
         {
             if (pointRepository.Delete(id))
             {
-                return this.Ok("Operation successful");
+                return this.Ok("Point with specified ID deleted successfully.");
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.NotFound("Point with specified ID not found.");
             }
         }
 
@@ -101,15 +107,16 @@
         [HttpPut]
         [Route("{id}")]
         [Authorize(Roles = "TEACHER")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdatePointRequest request)
+        public IActionResult UpdatePoint([FromRoute] int id, [FromBody] UpdatePointRequest request)
         {
-            if (pointRepository.Update(new Point(id, request.Mark, pointRepository.GetById(id).StudentId, pointRepository.GetById(id).Subject, DateTime.Now, request.Task)))
+            Point updatedPoint = new Point(id, request.Mark, pointRepository.GetById(id).StudentId, pointRepository.GetById(id).Subject, DateTime.Now, request.Task);
+            if (pointRepository.Update(updatedPoint))
             {
-                return this.Ok("Operation successful");
+                return this.Ok(updatedPoint);
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.NotFound("Poind with specified ID not found.");
             }
         }
     }

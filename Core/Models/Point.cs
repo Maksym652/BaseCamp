@@ -57,5 +57,18 @@
         /// Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
         /// </summary>
         public string Task { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null || (!obj.GetType().Equals(this.GetType())))
+            {
+                return false;
+            }
+            else
+            {
+                Point p = (Point)obj;
+                return p.Id == this.Id && p.StudentId == this.StudentId && p.Mark == this.Mark && p.Subject == this.Subject && p.Task == this.Task && p.Date.Date.Equals(this.Date.Date);
+            }
+        }
     }
 }

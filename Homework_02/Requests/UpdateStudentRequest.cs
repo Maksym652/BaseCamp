@@ -20,13 +20,13 @@ namespace WebApp.Api.Requests
         public bool IsStudiedOnBudget { get; set; }
 
 
-        UpdateStudentRequest(string newPassword, int group, bool isStudyingOnBudget)
+        public UpdateStudentRequest(string newPassword, int group, bool isStudyingOnBudget)
         {
             this.NewPassword = newPassword;
             this.Group = group;
             this.IsStudiedOnBudget = isStudyingOnBudget;
         }
 
-        UpdateStudentRequest() { }
+        public UpdateStudentRequest() { }
     }
 }
