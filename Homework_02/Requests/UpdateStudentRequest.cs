@@ -7,6 +7,8 @@ namespace WebApp.Api.Requests
 {
     public class UpdateStudentRequest
     {
+        public string NewPassword { get; set; }
+
         /// <summary>
         /// Gets or sets student's group.
         /// </summary>
@@ -18,8 +20,9 @@ namespace WebApp.Api.Requests
         public bool IsStudiedOnBudget { get; set; }
 
 
-        UpdateStudentRequest(int group, bool isStudyingOnBudget)
+        UpdateStudentRequest(string newPassword, int group, bool isStudyingOnBudget)
         {
+            this.NewPassword = newPassword;
             this.Group = group;
             this.IsStudiedOnBudget = isStudyingOnBudget;
         }

@@ -4,11 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using WebApp.Core.Enums;
 
     /// <summary>
     /// Represents a student of the university.
     /// </summary>
-    public class Student
+    public class Student : User
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Student"/> class.
@@ -18,7 +19,7 @@
         /// <param name="group">Student group.</param>
         /// <param name="specialty">Student specialty.</param>
         /// <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
-        public Student(int id, string name, int group, int specialty, bool isStudiedOnBudget)
+        public Student(string login, string password, int id, string name, int group, int specialty, bool isStudiedOnBudget) : base(login, password, UserRole.STUDENT)
         {
             this.Id = id;
             this.Name = name;

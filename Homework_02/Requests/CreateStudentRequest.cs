@@ -8,6 +8,16 @@
     public class CreateStudentRequest
     {
         /// <summary>
+        /// Gets or sets student's login.
+        /// </summary>
+        public string Login { get; set; }
+
+        /// <summary>
+        /// Gets or sets student's password.
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
         /// Gets or sets student's name.
         /// </summary>
         public string Name { get; set; }
@@ -29,8 +39,13 @@
 
         CreateStudentRequest() { }
 
-        CreateStudentRequest(string name, int group, int specialty, bool isStudyingOnBudget)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateStudentRequest"/> class.
+        /// </summary>
+        public CreateStudentRequest(string login, string password, string name, int group, int specialty, bool isStudyingOnBudget)
         {
+            this.Login = login;
+            this.Password = password;
             this.Name = name;
             this.Group = group;
             this.IsStudiedOnBudget = isStudyingOnBudget;

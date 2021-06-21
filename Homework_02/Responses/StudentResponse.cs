@@ -41,6 +41,8 @@
             this.IsStudyingOnBudget = st.IsStudyingOnBudget;
         }
 
+        public StudentResponse() { }
+
         /// <summary>
         /// Gets or sets student's ID.
         /// </summary>

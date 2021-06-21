@@ -2,17 +2,22 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using FluentValidation;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.IdentityModel.Tokens;
+    using WebApp.Api;
     using WebApp.Api.Requests;
     using WebApp.Api.Responses;
+    using WebApp.Api.Validators;
     using WebApp.Core.Models;
     using WebApp.Core.Repositories;
     using WebApp.Data.Repositories;
-    using FluentValidation;
-    using WebApp.Api.Validators;
 
     /// <summary>
     /// Controller with CRUD operations for Student entities.
@@ -21,17 +26,24 @@
     [Route("api/[controller]")]
     public class StudentsController : ControllerBase
     {
-        private static IRepository<Student> studentRepository = new StudentRepository();
-        private static IRepository<Point> pointRepository = new PointRepository();
+        private static IRepository<Student> studentRepository;
+        private static IRepository<Point> pointRepository;
+
+        public StudentsController(IRepository<Student> studentRepo, IRepository<Point> pointRepo)
+        {
+            studentRepository = studentRepo;
+            pointRepository = pointRepo;
+        }
 
         /// <summary>
         /// Returns list with all students.
         /// </summary>
-        /// <returns>List, that contains all students.</returns>
+        /// <returns> .</returns>
         [HttpGet]
-        public IEnumerable<StudentResponse> Get()
+        [Authorize]
+        public IActionResult GetAllStudents()
         {
-            return studentRepository.GetAll().Select(st => new StudentResponse(st));
+            return this.Ok(studentRepository.GetAll().Select(st => new StudentResponse(st)));
         }
 
         /// <summary>
@@ -41,9 +53,17 @@
         /// <returns>Student with specified ID.</returns>
         [HttpGet]
         [Route("{id}")]
-        public StudentResponse Get([FromRoute] int id)
+        [Authorize]
+        public IActionResult GetStudentById([FromRoute] int id)
         {
-            return new StudentResponse(studentRepository.GetById(id));
+            if (studentRepository.GetById(id) != null)
+            {
+                return this.Ok(new StudentResponse(studentRepository.GetById(id)));
+            }
+            else
+            {
+                return this.NotFound("Student with specified ID not fount.");
+            }
         }
 
         /// <summary>
@@ -52,16 +72,18 @@
         /// <param name="studentRequest">Object of CreateStudentRequest class.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
-        public IActionResult Post([FromBody] CreateStudentRequest studentRequest)
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public IActionResult AddStudent([FromBody] CreateStudentRequest studentRequest)
         {
             int id = 20000000 + ((DateTime.Now.Year - 2000) * 100000) + (studentRequest.Group * 100) + studentRepository.GetAll().Where(st => st.Group == studentRequest.Group).Count() + 1;
-            if (studentRepository.Create(new Student(id, studentRequest.Name, studentRequest.Group, studentRequest.Specialty, studentRequest.IsStudiedOnBudget)))
+            Student st = new Student(studentRequest.Login, studentRequest.Password, id, studentRequest.Name, studentRequest.Group, studentRequest.Specialty, studentRequest.IsStudiedOnBudget);
+            if (studentRepository.Create(st))
             {
-                return this.Ok("Operation successful");
+                return this.Ok(st);
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.BadRequest(st);
             }
         }
 
@@ -72,16 +94,18 @@
         /// <param name="request">Update student request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
-        [Route("update/{id}")]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        [Route("{id}")]
         public IActionResult Put([FromRoute] int id, [FromBody] UpdateStudentRequest request)
         {
-            if (studentRepository.Update(new Student(id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget)))
+            Student st = new Student(studentRepository.GetById(id).Login, request.NewPassword, id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget);
+            if (studentRepository.Update(st))
             {
-                return this.Ok("Operation successful");
+                return this.Ok(st);
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.BadRequest("Operation unsuccessful");
             }
         }
 
@@ -91,7 +115,9 @@
         /// <param name="id">Student id.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        [Route("{id}")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Delete([FromRoute] int id)
         {
             if (studentRepository.Delete(id))
             {
@@ -110,9 +136,57 @@
         /// <returns>Collection of the points of this student</returns>
         [HttpGet]
         [Route("{id}/points")]
-        public IEnumerable<Point> GetPoints([FromRoute] int id)
+        [Authorize(Roles = "STUDENT, TEACHER")]
+        public IActionResult GetPoints([FromRoute] int id)
         {
-            return pointRepository.GetAll().Where(p => p.StudentId == id);
+            return this.Ok(pointRepository.GetAll().Where(p => p.StudentId == id));
+        }
+
+
+        [HttpPost("/token")]
+        public IActionResult Token(string username, string password)
+        {
+            var identity = GetIdentity(username, password);
+            if (identity == null)
+            {
+                return BadRequest(new { errorText = "Invalid username or password." });
+            }
+
+            var now = DateTime.UtcNow;
+            var jwt = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    notBefore: now,
+                    claims: identity.Claims,
+                    expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            var response = new
+            {
+                access_token = encodedJwt,
+                username = identity.Name,
+            };
+
+            return new JsonResult(response);
+        }
+
+        private ClaimsIdentity GetIdentity(string username, string password)
+        {
+            Student student = studentRepository.GetAll().Where(x => x.Login == username && x.Password == password).FirstOrDefault();
+            if (student != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, student.Login),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, student.Role.ToString()),
+                };
+                ClaimsIdentity claimsIdentity =
+                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+                return claimsIdentity;
+            }
+
+            return null;
         }
     }
 }

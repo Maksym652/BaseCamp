@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebApp.Api</name>
+    </assembly>
+    <members>
+        <member name="M:WebApp.Api.Controllers.TeachersController.GetAll">
+            <summary>
+            Returns list with all teachers.
+            </summary>
+            <returns> .</returns>
+        </member>
+        <member name="M:WebApp.Api.Controllers.TeachersController.Get(System.Int32)">
+            <summary>
+            Returns teacher with specified ID.
+            </summary>
+            <param name="id">Teacher id.</param>
+            <returns>Teacher with specified ID.</returns>
+        </member>
+        <member name="M:WebApp.Api.Controllers.TeachersController.Post(WebApp.Api.Requests.CreateTeacherRequest)">
+            <summary>
+            Creates new student and adds it to the list.
+            </summary>
+            <param name="studentRequest">Object of CreateStudentRequest class.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:WebApp.Api.Controllers.TeachersController.Put(System.Int32,WebApp.Api.Requests.UpdateTeacherRequest)">
+            <summary>
+            Updates student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <param name="request">Update student request.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:WebApp.Api.Controllers.TeachersController.Delete(System.Int32)">
+            <summary>
+            Removes student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:WebApp.Api.Requests.CreatePointRequest.#ctor(System.Single,System.Int32,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WebApp.Api.Requests.CreatePointRequest"/> class.
+            </summary>
+            <param name="mark">Point on a 100-point scale.</param>
+            <param name="studentId">ID of the student.</param>
+            <param name="subject">Name of the subject.</param>
+            <param name="task">Name of the task completed by the student.</param>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreatePointRequest.Mark">
+            <summary>
+            Gets or sets a point on a 100-point scale.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreatePointRequest.StudentId">
+            <summary>
+            Gets or sets an ID of the student, who has got a point.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreatePointRequest.Subject">
+            <summary>
+            Gets or sets a name of the subject.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreatePointRequest.Task">
+            <summary>
+            Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.Login">
+            <summary>
+            Gets or sets student's login.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.Password">
+            <summary>
+            Gets or sets student's password.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.Name">
+            <summary>
+            Gets or sets student's name.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.Group">
+            <summary>
+            Gets or sets student's group.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.IsStudiedOnBudget">
+            <summary>
+            Gets or sets a value indicating whether student is studying on a budget (for free).
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.CreateStudentRequest.Specialty">
+            <summary>
+            Gets or sets student's specialty.
+            </summary>
+        </member>
+        <member name="M:WebApp.Api.Requests.CreateStudentRequest.#ctor(System.String,System.String,System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WebApp.Api.Requests.CreateStudentRequest"/> class.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.UpdatePointRequest.Mark">
+            <summary>
+            Gets or sets a point on a 100-point scale.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.UpdatePointRequest.Task">
+            <summary>
+            Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.UpdateStudentRequest.Group">
+            <summary>
+            Gets or sets student's group.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Requests.UpdateStudentRequest.IsStudiedOnBudget">
+            <summary>
+            Gets or sets a value indicating whether student is studying on a budget (for free).
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:WebApp.Api.Responses.PointResponse.#ctor(System.Single,System.Int32,System.String,System.DateTime,System.String)" -->
+        <member name="M:WebApp.Api.Responses.PointResponse.#ctor(WebApp.Core.Models.Point)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WebApp.Api.Responses.PointResponse"/> class from Point object.
+            </summary>
+            <param name="point">Point object</param>
+        </member>
+        <member name="P:WebApp.Api.Responses.PointResponse.Mark">
+            <summary>
+            Gets or sets a point on a 100-point scale.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.PointResponse.StudentId">
+            <summary>
+            Gets or sets an ID of the student, who has got a point.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.PointResponse.Subject">
+            <summary>
+            Gets or sets a name of the subject.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.PointResponse.Date">
+            <summary>
+            Gets or sets a date when student has got a point.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.PointResponse.Task">
+            <summary>
+            Gets or sets a name of the task, completed by student and rated by the Mark. For example "class work", "homework", "final test" etc.
+            </summary>
+        </member>
+        <member name="T:WebApp.Api.Responses.StudentResponse">
+            <summary>
+            .
+            </summary>
+        </member>
+        <member name="M:WebApp.Api.Responses.StudentResponse.#ctor(System.Int32,System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WebApp.Api.Responses.StudentResponse"/> class.
+            </summary>
+            <param name="id">Student id.</param>
+            <param name="name">Student name.</param>
+            <param name="group">Student group.</param>
+            <param name="specialty">Student specialty.</param>
+            <param name="isStudiedOnBudget">Bool value showing if student is studying on budget (for free).</param>
+        </member>
+        <member name="M:WebApp.Api.Responses.StudentResponse.#ctor(WebApp.Core.Models.Student)">
+            <summary>
+            Initializes a new instance of the <see cref="T:WebApp.Api.Responses.StudentResponse"/> class from Student object.
+            </summary>
+            <param name="st">Student object.</param>
+        </member>
+        <member name="P:WebApp.Api.Responses.StudentResponse.Id">
+            <summary>
+            Gets or sets student's ID.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.StudentResponse.Name">
+            <summary>
+            Gets or sets student's name.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.StudentResponse.Group">
+            <summary>
+            Gets or sets student's group.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.StudentResponse.Specialty">
+            <summary>
+            Gets or sets student's specialty.
+            </summary>
+        </member>
+        <member name="P:WebApp.Api.Responses.StudentResponse.IsStudyingOnBudget">
+            <summary>
+            Gets or sets a value indicating whether student is studying on a budget (for free).
+            </summary>
+        </member>
+        <member name="T:BaseCamp.PointsController">
+            <summary>
+            Controller with CRUD operations for Point entities.
+            </summary>
+        </member>
+        <member name="M:BaseCamp.PointsController.GetAll">
+            <summary>
+            Returns all points.
+            </summary>
+            <returns>Collection that contains all points.</returns>
+        </member>
+        <member name="M:BaseCamp.PointsController.GetById(System.Int32)">
+            <summary>
+            Returns point with specified ID.
+            </summary>
+            <param name="id">id of the point.</param>
+            <returns>False if student id is less than 0 or if the list already contains student with the same Id, otherwise true.</returns>
+        </member>
+        <member name="M:BaseCamp.PointsController.Create(WebApp.Api.Requests.CreatePointRequest)">
+            <summary>
+            Creates new point and adds it to the list.
+            </summary>
+            <param name="request">Point create request.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:BaseCamp.PointsController.Delete(System.Int32)">
+            <summary>
+            Removes point with specified id from the list.
+            </summary>
+            <param name="id">Point id.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:BaseCamp.PointsController.Update(System.Int32,WebApp.Api.Requests.UpdatePointRequest)">
+            <summary>
+            Updates point with specified ID.
+            </summary>
+            <param name="id">Point id.</param>
+            <param name="request">Point update request.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="T:Basecamp.StudentsController">
+            <summary>
+            Controller with CRUD operations for Student entities.
+            </summary>
+        </member>
+        <member name="M:Basecamp.StudentsController.GetAllStudents">
+            <summary>
+            Returns list with all students.
+            </summary>
+            <returns> .</returns>
+        </member>
+        <member name="M:Basecamp.StudentsController.GetStudentById(System.Int32)">
+            <summary>
+            Returns student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <returns>Student with specified ID.</returns>
+        </member>
+        <member name="M:Basecamp.StudentsController.AddStudent(WebApp.Api.Requests.CreateStudentRequest)">
+            <summary>
+            Creates new student and adds it to the list.
+            </summary>
+            <param name="studentRequest">Object of CreateStudentRequest class.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:Basecamp.StudentsController.Put(System.Int32,WebApp.Api.Requests.UpdateStudentRequest)">
+            <summary>
+            Updates student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <param name="request">Update student request.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:Basecamp.StudentsController.Delete(System.Int32)">
+            <summary>
+            Removes student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <returns>Object that represents result of the method work.</returns>
+        </member>
+        <member name="M:Basecamp.StudentsController.GetPoints(System.Int32)">
+            <summary>
+            Returns a collection of points of the student with specified ID.
+            </summary>
+            <param name="id">Student id.</param>
+            <returns>Collection of the points of this student</returns>
+        </member>
+    </members>
+</doc>

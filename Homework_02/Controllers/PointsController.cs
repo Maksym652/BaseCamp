@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using WebApp.Api.Requests;
@@ -19,16 +20,22 @@
     [ApiController]
     public class PointsController : ControllerBase
     {
-        private static IRepository<Point> pointRepository = new PointRepository();
+        private static IRepository<Point> pointRepository;
+
+        public PointsController(IRepository<Point> pointRepo)
+        {
+            pointRepository = pointRepo;
+        }
 
         /// <summary>
         /// Returns all points.
         /// </summary>
         /// <returns>Collection that contains all points.</returns>
         [HttpGet]
-        public IEnumerable<PointResponse> GetAll()
+        [Authorize(Roles = "STUDENT, TEACHER")]
+        public IActionResult GetAll()
         {
-            return pointRepository.GetAll().Select(p => new PointResponse(p));
+            return this.Ok(pointRepository.GetAll().Select(p => new PointResponse(p)));
         }
 
         /// <summary>
@@ -38,9 +45,10 @@
         /// <returns>False if student id is less than 0 or if the list already contains student with the same Id, otherwise true.</returns>
         [HttpGet]
         [Route("{id}")]
-        public PointResponse GetById([FromRoute] int id)
+        [Authorize(Roles = "STUDENT, TEACHER")]
+        public IActionResult GetById([FromRoute] int id)
         {
-            return new PointResponse(pointRepository.GetById(id));
+            return this.Ok(new PointResponse(pointRepository.GetById(id)));
         }
 
         /// <summary>
@@ -49,6 +57,7 @@
         /// <param name="request">Point create request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPost]
+        [Authorize(Roles = "TEACHER")]
         public IActionResult Create([FromBody] CreatePointRequest request)
         {
             int id = ((request.StudentId - 20000000) * 100) + pointRepository.GetAll()
@@ -59,7 +68,7 @@
             }
             else
             {
-                return this.Ok("Operation unsuccessful");
+                return this.BadRequest("Operation unsuccessful");
             }
         }
 
@@ -69,7 +78,9 @@
         /// <param name="id">Point id.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpDelete]
-        public IActionResult Delete([FromBody] int id)
+        [Route("{id}")]
+        [Authorize(Roles = "TEACHER")]
+        public IActionResult Delete([FromRoute] int id)
         {
             if (pointRepository.Delete(id))
             {
@@ -88,7 +99,8 @@
         /// <param name="request">Point update request.</param>
         /// <returns>Object that represents result of the method work.</returns>
         [HttpPut]
-        [Route("update/{id}")]
+        [Route("{id}")]
+        [Authorize(Roles = "TEACHER")]
         public IActionResult Update([FromRoute] int id, [FromBody] UpdatePointRequest request)
         {
             if (pointRepository.Update(new Point(id, request.Mark, pointRepository.GetById(id).StudentId, pointRepository.GetById(id).Subject, DateTime.Now, request.Task)))

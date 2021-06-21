@@ -6,7 +6,8 @@ namespace Homework2_Basecamp
     using System.Threading.Tasks;
     using FluentValidation;
     using FluentValidation.AspNetCore;
-
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +16,9 @@ namespace Homework2_Basecamp
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
+    using Microsoft.OpenApi.Models;
+    using WebApp.Api;
     using WebApp.Api.Requests;
     using WebApp.Api.Validators;
     using WebApp.Core.Models;
@@ -41,16 +45,63 @@ namespace Homework2_Basecamp
             services.AddTransient<IValidator<UpdateStudentRequest>, UpdateStudentRequestValidator>();
             services.AddTransient<IValidator<CreatePointRequest>, CreatePointRequestValidator>();
             services.AddTransient<IValidator<UpdatePointRequest>, UpdatePointRequestValidator>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = AuthOptions.ISSUER,
+                            ValidateAudience = true,
+                            ValidAudience = AuthOptions.AUDIENCE,
+                            ValidateLifetime = true,
+                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                            ValidateIssuerSigningKey = true,
+                        };
+                    });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
                     Version = "v1",
                     Title = "Test API",
-                    Description = "ASP.NET Core Web API"
+                    Description = "ASP.NET Core Web API",
+                });
+                c.IncludeXmlComments("WebApp.Api.xml");
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "JWT Authentication",
+                    Description = "Enter JWT Bearer token **_only_**",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Id = "bearerAuth",
+                        Type = ReferenceType.SecurityScheme,
+                    },
+                };
+                c.AddSecurityDefinition("bearerAuth", securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securityScheme, new string[] { } },
+                });
+                var basicSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    Reference = new OpenApiReference { Id = "BasicAuth", Type = ReferenceType.SecurityScheme },
+                };
+                c.AddSecurityDefinition(basicSecurityScheme.Reference.Id, basicSecurityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { basicSecurityScheme, new string[] { } },
                 });
             });
-        }
+    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -59,15 +110,17 @@ namespace Homework2_Basecamp
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");
             });
-
+            app.UseAuthentication();
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
 
             app.UseAuthorization();
 

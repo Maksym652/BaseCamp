@@ -38,6 +38,8 @@
             this.Task = point.Task;
         }
 
+        public PointResponse() { }
+
         /// <summary>
         /// Gets or sets a point on a 100-point scale.
         /// </summary>
