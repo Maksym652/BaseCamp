@@ -16,13 +16,19 @@ namespace WebApp.Tests
 {
     public class PointsControllerTest
     {
+        Mock<IRepository<Point>> mockPointRepository;
+
+        public PointsControllerTest()
+        {
+            mockPointRepository = new Mock<IRepository<Point>>();
+        }
+
         [Fact]
         public void GetAllPoints_returnsActionResultOkWithAllPoints()
         {
             // Arrange
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.GetAll()).Returns(GetTestPoints());
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.GetAll()).Returns(GetTestPoints());
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.GetAllPoints();
             // Assert
@@ -36,12 +42,12 @@ namespace WebApp.Tests
         {
             // Arrange
             int testPointId = 1;
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.GetById(testPointId)).Returns(GetTestPoints()[0]);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.GetById(testPointId)).Returns(GetTestPoints()[0]);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.GetPointById(testPointId);
             // Assert
+            mockPointRepository.Verify(repo => repo.GetById(It.Is<int>(x => x == testPointId)), Times.Once);
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.As<PointResponse>().Should().BeEquivalentTo(new PointResponse(GetTestPoints()[0]));
         }
@@ -51,12 +57,12 @@ namespace WebApp.Tests
         {
             // Arrange
             int testPointId = 0;
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.GetById(testPointId)).Returns(GetTestPoints().FirstOrDefault(p => p.Id == testPointId));
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.GetById(testPointId)).Returns(GetTestPoints().FirstOrDefault(p => p.Id == testPointId));
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.GetPointById(testPointId);
             // Assert
+            mockPointRepository.Verify(repo => repo.GetById(It.Is<int>(x => x == testPointId)), Times.Once);
             result.Should().BeOfType<NotFoundObjectResult>();
         }
 
@@ -67,25 +73,14 @@ namespace WebApp.Tests
             CreatePointRequest testPointRequest = new CreatePointRequest(88.8f, 21910204, "Object-orientate programing", "Lab work №6");
             int id = ((testPointRequest.StudentId - 20000000) * 100) + 1;
             Point expectedTestPoint = new Point(id, testPointRequest.Mark, testPointRequest.StudentId, testPointRequest.Subject, DateTime.Now, testPointRequest.Task);
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Create(expectedTestPoint)).Returns(true);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Create(expectedTestPoint)).Returns(true);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.AddPoint(testPointRequest);
             // Assert
+            mockPointRepository.Verify(repo => repo.Create(It.Is<Point>(x => x.Equals(expectedTestPoint))), Times.Once);
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.As<Point>().Should().BeEquivalentTo(expectedTestPoint);
-        }
-
-        private List<Point> GetTestPoints()
-        {
-            return new List<Point>
-            {
-                new Point(1, 78, 1910202, "Object-orientate programing", new DateTime(2021, 6, 10), "Exam"),
-                new Point(2, 95, 1910202, "Object-orientate programing", new DateTime(2021, 3, 10), "Course-project"),
-                new Point(3, 85, 1910101, "Object-orientate programing", new DateTime(2021, 6, 10), "Exam"),
-                new Point(4, 100, 1910101, "Object-orientate programing", new DateTime(2021, 3, 10), "Course-project"),
-            };
         }
 
         [Fact]
@@ -95,12 +90,12 @@ namespace WebApp.Tests
             CreatePointRequest testPointRequest = new CreatePointRequest(10, 21910204, "Object-orientate programing", "Lab work №6");
             int id = ((testPointRequest.StudentId - 20000000) * 100) + 1;
             Point expectedTestPoint = new Point(id, testPointRequest.Mark, testPointRequest.StudentId, testPointRequest.Subject, DateTime.Now, testPointRequest.Task);
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Create(expectedTestPoint)).Returns(false);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Create(expectedTestPoint)).Returns(false);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.AddPoint(testPointRequest);
             // Assert
+            mockPointRepository.Verify(repo => repo.Create(It.Is<Point>(x => x.Equals(expectedTestPoint))), Times.Once);
             result.Should().BeOfType<BadRequestObjectResult>();
         }
 
@@ -111,13 +106,14 @@ namespace WebApp.Tests
             UpdatePointRequest testUpdatePointRequest = new UpdatePointRequest(12, "Lab work №6 + extra task");
             Point testPoint = new Point(5, 10, 1910205, "Object-orientate programing", DateTime.Now, "Lab work №6");
             Point updatedTestPoint = new Point(testPoint.Id, testUpdatePointRequest.Mark, testPoint.StudentId, testPoint.Subject, DateTime.Now, testUpdatePointRequest.Task);
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Update(updatedTestPoint)).Returns(true);
-            mock.Setup(repo => repo.GetById(testPoint.Id)).Returns(testPoint);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Update(updatedTestPoint)).Returns(true);
+            mockPointRepository.Setup(repo => repo.GetById(testPoint.Id)).Returns(testPoint);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.UpdatePoint(testPoint.Id, testUpdatePointRequest);
             // Assert
+            mockPointRepository.Verify(repo => repo.Update(It.Is<Point>(x => x.Equals(updatedTestPoint))), Times.Once);
+            mockPointRepository.Verify(repo => repo.GetById(It.Is<int>(x => x == testPoint.Id)), Times.Once);
             result.Should().BeOfType<OkObjectResult>();
             result.As<OkObjectResult>().Value.As<Point>().Should().BeEquivalentTo(updatedTestPoint);
         }
@@ -129,13 +125,14 @@ namespace WebApp.Tests
             UpdatePointRequest testUpdatePointRequest = new UpdatePointRequest(12, "Lab work №6 + extra task");
             Point testPoint = new Point(5, 10, 1910205, "Object-orientate programing", DateTime.Now, "Lab work №6");
             Point updatedTestPoint = new Point(testPoint.Id, testUpdatePointRequest.Mark, testPoint.StudentId, testPoint.Subject, DateTime.Now, testUpdatePointRequest.Task);
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Update(updatedTestPoint)).Returns(false);
-            mock.Setup(repo => repo.GetById(testPoint.Id)).Returns(testPoint);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Update(updatedTestPoint)).Returns(false);
+            mockPointRepository.Setup(repo => repo.GetById(testPoint.Id)).Returns(() => null);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.UpdatePoint(testPoint.Id, testUpdatePointRequest);
             // Assert
+            mockPointRepository.Verify(repo => repo.Update(It.Is<Point>(x => x.Equals(updatedTestPoint))), Times.Never);
+            mockPointRepository.Verify(repo => repo.GetById(It.Is<int>(x => x == testPoint.Id)), Times.Once);
             result.Should().BeOfType<NotFoundObjectResult>();
         }
 
@@ -143,12 +140,12 @@ namespace WebApp.Tests
         public void DeletePoint_specifiedPointExists_returnsOkResult()
         {
             // Arrange
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Delete(123)).Returns(true);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Delete(123)).Returns(true);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.DeletePoint(123);
             // Assert
+            mockPointRepository.Verify(repo => repo.Delete(It.Is<int>(x => x == 123)), Times.Once);
             result.Should().BeOfType<OkObjectResult>();
         }
 
@@ -156,13 +153,24 @@ namespace WebApp.Tests
         public void DeletePoint_specifiedPointNotExists_returnsNotFoundResult()
         {
             // Arrange
-            var mock = new Mock<IRepository<Point>>();
-            mock.Setup(repo => repo.Delete(123)).Returns(false);
-            var controller = new PointsController(mock.Object);
+            mockPointRepository.Setup(repo => repo.Delete(123)).Returns(false);
+            var controller = new PointsController(mockPointRepository.Object);
             // Act
             var result = controller.DeletePoint(123);
             // Assert
+            mockPointRepository.Verify(repo => repo.Delete(It.Is<int>(x => x == 123)), Times.Once);
             result.Should().BeOfType<NotFoundObjectResult>();
+        }
+
+        private List<Point> GetTestPoints()
+        {
+            return new List<Point>
+            {
+                new Point(1, 78, 1910202, "Object-orientate programing", new DateTime(2021, 6, 10), "Exam"),
+                new Point(2, 95, 1910202, "Object-orientate programing", new DateTime(2021, 3, 10), "Course-project"),
+                new Point(3, 85, 1910101, "Object-orientate programing", new DateTime(2021, 6, 10), "Exam"),
+                new Point(4, 100, 1910101, "Object-orientate programing", new DateTime(2021, 3, 10), "Course-project"),
+            };
         }
     }
 }

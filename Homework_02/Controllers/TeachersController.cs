@@ -35,7 +35,8 @@ namespace WebApp.Api.Controllers
         [Authorize]
         public IActionResult GetAllTeachers()
         {
-            return this.Ok(teacherRepository.GetAll().Select(t => new TeacherResponse(t)));
+            return Ok(teacherRepository.GetAll()
+                .Select(t => new TeacherResponse(t)));
         }
 
         /// <summary>
@@ -48,12 +49,13 @@ namespace WebApp.Api.Controllers
         [Authorize]
         public IActionResult GetTeacherById([FromRoute] int id)
         {
-            if (this.teacherRepository.GetById(id) == null)
+            Teacher t = teacherRepository.GetById(id);
+            if (t == null)
             {
-                return this.NotFound("Teacher with specified id not found.");
+                return NotFound("Teacher with specified id not found.");
             }
 
-            return this.Ok(new TeacherResponse(teacherRepository.GetById(id)));
+            return Ok(new TeacherResponse(t));
         }
 
         /// <summary>
@@ -67,17 +69,18 @@ namespace WebApp.Api.Controllers
         {
             int id;
             if (teacherRepository.GetAll().Any())
-                id = teacherRepository.GetAll().Select(t => t.Id).Max() + 1;
+                id = teacherRepository.GetAll()
+                    .Select(t => t.Id).Max() + 1;
             else
                 id = 0;
             Teacher t = new Teacher(id, teacherRequest.Name, teacherRequest.DepartmentName, teacherRequest.Login, teacherRequest.Password);
             if (teacherRepository.Create(t))
             {
-                return this.Ok(t);
+                return Ok(t);
             }
             else
             {
-                return this.BadRequest(t);
+                return BadRequest(t);
             }
         }
 
@@ -92,14 +95,20 @@ namespace WebApp.Api.Controllers
         [Route("{id}")]
         public IActionResult UpdateTeacher([FromRoute] int id, [FromBody] UpdateTeacherRequest request)
         {
-            Teacher t = new Teacher(id, teacherRepository.GetById(id).Name, request.DepartmentName, teacherRepository.GetById(id).Login, request.Password);
-            if (teacherRepository.Update(t))
+            Teacher beforeUpdating = teacherRepository.GetById(id);
+            if (beforeUpdating == null)
             {
-                return this.Ok(t);
+                return BadRequest("Teacher with specified ID not found.");
+            }
+
+            Teacher updated = new Teacher(id, beforeUpdating.Name, request.DepartmentName, beforeUpdating.Login, request.Password);
+            if (teacherRepository.Update(updated))
+            {
+                return Ok(updated);
             }
             else
             {
-                return this.BadRequest("Operation unsuccessful");
+                return BadRequest("Operation unsuccessful");
             }
         }
 
@@ -115,11 +124,11 @@ namespace WebApp.Api.Controllers
         {
             if (teacherRepository.Delete(id))
             {
-                return this.Ok("Operation successful");
+                return Ok("Operation successful");
             }
             else
             {
-                return this.NotFound("Teacher with specified ID not found.");
+                return NotFound("Teacher with specified ID not found.");
             }
         }
 
@@ -153,7 +162,8 @@ namespace WebApp.Api.Controllers
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            Teacher teacher = teacherRepository.GetAll().Where(t => t.Login == username && t.Password == password).FirstOrDefault();
+            Teacher teacher = teacherRepository.GetAll()
+                .Where(t => t.Login == username && t.Password == password).FirstOrDefault();
             if (teacher != null)
             {
                 var claims = new List<Claim>

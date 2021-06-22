@@ -35,7 +35,8 @@
         [Authorize(Roles = "STUDENT, TEACHER")]
         public IActionResult GetAllPoints()
         {
-            return this.Ok(pointRepository.GetAll().Select(p => new PointResponse(p)));
+            return Ok(pointRepository.GetAll()
+                .Select(p => new PointResponse(p)));
         }
 
         /// <summary>
@@ -48,12 +49,13 @@
         [Authorize(Roles = "STUDENT, TEACHER")]
         public IActionResult GetPointById([FromRoute] int id)
         {
-            if (pointRepository.GetById(id) == null)
+            Point p = pointRepository.GetById(id);
+            if (p == null)
             {
-                return this.NotFound("Point with specified ID not found.");
+                return NotFound("Point with specified ID not found.");
             }
 
-            return this.Ok(new PointResponse(pointRepository.GetById(id)));
+            return Ok(new PointResponse(p));
         }
 
         /// <summary>
@@ -70,11 +72,11 @@
             Point point = new Point(id, request.Mark, request.StudentId, request.Subject, DateTime.Now, request.Task);
             if (pointRepository.Create(point))
             {
-                return this.Ok(point);
+                return Ok(point);
             }
             else
             {
-                return this.BadRequest("Operation unsuccessful");
+                return BadRequest("Operation unsuccessful");
             }
         }
 
@@ -90,11 +92,11 @@
         {
             if (pointRepository.Delete(id))
             {
-                return this.Ok("Point with specified ID deleted successfully.");
+                return Ok("Point with specified ID deleted successfully.");
             }
             else
             {
-                return this.NotFound("Point with specified ID not found.");
+                return NotFound("Point with specified ID not found.");
             }
         }
 
@@ -109,14 +111,20 @@
         [Authorize(Roles = "TEACHER")]
         public IActionResult UpdatePoint([FromRoute] int id, [FromBody] UpdatePointRequest request)
         {
-            Point updatedPoint = new Point(id, request.Mark, pointRepository.GetById(id).StudentId, pointRepository.GetById(id).Subject, DateTime.Now, request.Task);
+            Point pointBeforeUpdating = pointRepository.GetById(id);
+            if (pointBeforeUpdating == null)
+            {
+                return NotFound("Point with specified ID not found.");
+            }
+
+            Point updatedPoint = new Point(id, request.Mark, pointBeforeUpdating.StudentId, pointBeforeUpdating.Subject, DateTime.Now, request.Task);
             if (pointRepository.Update(updatedPoint))
             {
-                return this.Ok(updatedPoint);
+                return Ok(updatedPoint);
             }
             else
             {
-                return this.NotFound("Poind with specified ID not found.");
+                return NotFound("Poind with specified ID not found.");
             }
         }
     }

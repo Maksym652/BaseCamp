@@ -43,7 +43,8 @@
         [Authorize]
         public IActionResult GetAllStudents()
         {
-            return this.Ok(studentRepository.GetAll().Select(st => new StudentResponse(st)));
+            return Ok(studentRepository.GetAll()
+                .Select(st => new StudentResponse(st)));
         }
 
         /// <summary>
@@ -56,13 +57,14 @@
         [Authorize]
         public IActionResult GetStudentById([FromRoute] int id)
         {
-            if (studentRepository.GetById(id) != null)
+            Student st = studentRepository.GetById(id);
+            if (st != null)
             {
-                return this.Ok(new StudentResponse(studentRepository.GetById(id)));
+                return Ok(new StudentResponse(st));
             }
             else
             {
-                return this.NotFound("Student with specified ID not fount.");
+                return NotFound("Student with specified ID not fount.");
             }
         }
 
@@ -79,11 +81,11 @@
             Student st = new Student(studentRequest.Login, studentRequest.Password, id, studentRequest.Name, studentRequest.Group, studentRequest.Specialty, studentRequest.IsStudiedOnBudget);
             if (studentRepository.Create(st))
             {
-                return this.Ok(st);
+                return Ok(st);
             }
             else
             {
-                return this.BadRequest("Operation unsuccessful");
+                return BadRequest("Operation unsuccessful");
             }
         }
 
@@ -100,18 +102,18 @@
         {
             if (studentRepository.GetById(id) == null)
             {
-                return this.BadRequest("Operation unsuccessful. Student with specified ID not found!");
+                return BadRequest("Operation unsuccessful. Student with specified ID not found!");
             }
             else
             {
                 Student st = new Student(studentRepository.GetById(id).Login, request.NewPassword, id, studentRepository.GetById(id).Name, request.Group, studentRepository.GetById(id).Specialty, request.IsStudiedOnBudget);
                 if (studentRepository.Update(st))
                 {
-                    return this.Ok(st);
+                    return Ok(st);
                 }
                 else
                 {
-                    return this.BadRequest("Operation unsuccessful");
+                    return BadRequest("Operation unsuccessful");
                 }
             }
         }
@@ -148,7 +150,9 @@
         {
             if (studentRepository.GetById(id) != null)
             {
-                return this.Ok(pointRepository.GetAll().Where(p => p.StudentId == id).Select(p => new PointResponse(p)));
+                return Ok(pointRepository.GetAll()
+                    .Where(p => p.StudentId == id)
+                    .Select(p => new PointResponse(p)));
             }
             else
             {
@@ -187,7 +191,8 @@
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            Student student = studentRepository.GetAll().Where(x => x.Login == username && x.Password == password).FirstOrDefault();
+            Student student = studentRepository.GetAll()
+                .Where(x => x.Login == username && x.Password == password).FirstOrDefault();
             if (student != null)
             {
                 var claims = new List<Claim>
